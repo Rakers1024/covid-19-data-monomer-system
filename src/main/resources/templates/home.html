@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>新冠病毒跟踪</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="shortcut icon" type="image/png" href="assets/images/icon/favicon.ico">
+    <link rel="stylesheet" th:href="@{assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{assets/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{assets/css/themify-icons.css}">
+    <link rel="stylesheet" th:href="@{assets/css/metisMenu.css}">
+    <link rel="stylesheet" th:href="@{assets/css/owl.carousel.min.css}">
+    <link rel="stylesheet" th:href="@{assets/css/slicknav.min.css}">
+    <!-- amcharts css -->
+    <link rel="stylesheet" th:href="@{assets/css/export.css}" type="text/css" media="all" />
+    <!-- Start datatable css -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+    <!-- style css -->
+    <link rel="stylesheet" th:href="@{assets/css/typography.css}">
+    <link rel="stylesheet" th:href="@{assets/css/default-css.css}">
+    <link rel="stylesheet" th:href="@{assets/css/styles.css}">
+    <link rel="stylesheet" th:href="@{assets/css/responsive.css}">
+    <!-- modernizr css -->
+    <script src="assets/js/vendor/modernizr-2.8.3.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <style type="text/css">
+        .iconStyle{
+            height:20px;
+            margin-left:5px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>新冠病毒跟踪</h1>
+    <p>该应用程序列出了全球范围内报告的当前病例数</p>
+
+    <div class="jumbotron">
+        <h1 class="display-4" th:text="${totalReportedCases}"></h1>
+        <p class="lead">截至今天报告的总病例数</p>
+        <hr class="my-4">
+        <p>
+            <span>自前一天以来报告的新病例 : </span>
+            <span th:text="${totalNewCases}"></span>
+        </p>
+        <p>
+            <span>死亡总数 : </span>
+            <span th:text="${totalDeaths}"></span>
+        </p>
+        <p>
+            <span>今天的总死亡人数 : </span>
+            <span th:text="${totalDeathsToday}"></span>
+        </p>
+    </div>
+
+<!--    <table class="table">-->
+<!--        <tr>-->
+<!--            <th>国家</th>-->
+<!--            <th>报告病例总数</th>-->
+<!--            <th>自上一天以来的变化</th>-->
+<!--            <th>总死亡人数</th>-->
+<!--            <th>今天的总死亡人数</th>-->
+<!--        </tr>-->
+<!--        <tr th:each="locationsStat : ${locationsStats}">-->
+<!--            <td th:text="${locationsStat.country}"></td>-->
+<!--            <td th:text="${locationsStat.updated}? ${locationsStat.latestCases} : '未更新'">0</td>-->
+<!--            <td th:if="${locationsStat.diffFromPrevDay == 0}">0</td>-->
+<!--            <td th:if="${locationsStat.diffFromPrevDay > 0}"><span th:text="${locationsStat.diffFromPrevDay}"></span><img src="sort-up.png" class="iconStyle"/></td>-->
+<!--            <td th:if="${locationsStat.diffFromPrevDay < 0}"><span th:text="${-locationsStat.diffFromPrevDay}"></span><img src="sort-down.png" class="iconStyle"/></td>-->
+<!--            <td th:text="${locationsStat.death}"></td>-->
+<!--            <td th:if="${locationsStat.deathDiffFromPrevDay == 0}">0</td>-->
+<!--            <td th:if="${locationsStat.deathDiffFromPrevDay > 0}"><span th:text="${locationsStat.deathDiffFromPrevDay}"></span><img src="sort-up.png" class="iconStyle"/></td>-->
+<!--            <td th:if="${locationsStat.deathDiffFromPrevDay < 0}"><span th:text="${-locationsStat.deathDiffFromPrevDay}"></span><img src="sort-down.png" class="iconStyle"/></td>-->
+<!--        </tr>-->
+<!--    </table>-->
+
+    <div class="card">
+        <div class="card-body">
+            <span class="header-title">所有国家</span>
+            <div class="data-tables datatable-primary">
+                <table id="dataTable2" class="text-center">
+                    <thead class="text-capitalize">
+                        <tr>
+                            <th>国家</th>
+                            <th>报告病例总数</th>
+                            <th>自上一天以来的变化</th>
+                            <th>总死亡人数</th>
+                            <th>今天的总死亡人数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="locationsStat : ${locationsStats}">
+                            <td th:text="${locationsStat.country}"></td>
+                            <td th:text="${locationsStat.updated}? ${locationsStat.latestCases} : '未更新'">0</td>
+                            <td th:if="${locationsStat.diffFromPrevDay == 0}">0</td>
+                            <td th:if="${locationsStat.diffFromPrevDay > 0}"><span th:text="${locationsStat.diffFromPrevDay}"></span><img src="sort-up.png" class="iconStyle"/></td>
+                            <td th:if="${locationsStat.diffFromPrevDay < 0}"><span th:text="${-locationsStat.diffFromPrevDay}"></span><img src="sort-down.png" class="iconStyle"/></td>
+                            <td th:text="${locationsStat.death}"></td>
+                            <td th:if="${locationsStat.deathDiffFromPrevDay == 0}">0</td>
+                            <td th:if="${locationsStat.deathDiffFromPrevDay > 0}"><span th:text="${locationsStat.deathDiffFromPrevDay}"></span><img src="sort-up.png" class="iconStyle"/></td>
+                            <td th:if="${locationsStat.deathDiffFromPrevDay < 0}"><span th:text="${-locationsStat.deathDiffFromPrevDay}"></span><img src="sort-down.png" class="iconStyle"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<!-- jquery latest version -->
+<script th:src="@{assets/js/vendor/jquery-2.2.4.min.js}"></script>
+<!-- bootstrap 4 js -->
+<script th:src="@{assets/js/popper.min.js}"></script>
+<script th:src="@{assets/js/bootstrap.min.js}"></script>
+<script th:src="@{assets/js/owl.carousel.min.js}"></script>
+<script th:src="@{assets/js/metisMenu.min.js}"></script>
+<script th:src="@{assets/js/jquery.slimscroll.min.js}"></script>
+<script th:src="@{assets/js/jquery.slicknav.min.js}"></script>
+
+<!-- Start datatable js -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
+<!-- others plugins -->
+<script src="assets/js/plugins.js"></script>
+<script src="assets/js/scripts.js"></script>
+</html>
