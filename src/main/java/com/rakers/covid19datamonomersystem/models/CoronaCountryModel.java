@@ -14,6 +14,20 @@ public class CoronaCountryModel {
     private int death;
     private int deathDiffFromPrevDay;
 
+    public CoronaCountryModel(){}
+
+    public CoronaCountryModel(CoronaCountryModel coronaCountryModel){
+        this.country = coronaCountryModel.getCountry();
+        this.stateModelsList = coronaCountryModel.getStateModelsList();
+        this.latestCases = coronaCountryModel.getLatestCases();
+        this.diffFromPrevDay = coronaCountryModel.getDiffFromPrevDay();
+        this.updated = coronaCountryModel.isUpdated();
+        this.longitude = coronaCountryModel.getLongitude();
+        this.latitude = coronaCountryModel.getLatitude();
+        this.death = coronaCountryModel.getDeath();
+        this.deathDiffFromPrevDay = coronaCountryModel.getDeathDiffFromPrevDay();
+    }
+
     public String getCountry() {
         return country;
     }

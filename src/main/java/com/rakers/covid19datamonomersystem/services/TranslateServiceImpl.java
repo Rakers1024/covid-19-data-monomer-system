@@ -64,7 +64,7 @@ public class TranslateServiceImpl implements TranslateService, Constants {
                 throw new APIRuntimeException("从redis获取数据时发生错误!");
             }
         }else {
-            logger.info("在redis中未找到key");
+            logger.info("在redis中未找到key "+url);
             try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
                 HttpGet getRequest = new HttpGet(url);
                 HttpResponse response = null;

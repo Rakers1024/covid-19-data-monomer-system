@@ -1,9 +1,11 @@
 package com.rakers.covid19datamonomersystem.controllers;
 
-import com.rakers.covid19datamonomersystem.components.CoronaVirusDataImpl;
+import com.rakers.covid19datamonomersystem.components.CoronaVirusData;
 import com.rakers.covid19datamonomersystem.models.CoronaCountryModel;
 import com.rakers.covid19datamonomersystem.services.TranslateService;
 import com.rakers.covid19datamonomersystem.services.TranslateServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,12 +18,12 @@ import java.util.Map;
 
 @Controller
 public class HomeController {
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    @Autowired
+    CoronaVirusData virusData;
 
     @Autowired
-    CoronaVirusDataImpl virusData;
-
-    @Autowired
-    TranslateServiceImpl tls;
+    TranslateService tls;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -29,8 +31,9 @@ public class HomeController {
             Map<String, CoronaCountryModel> dataMap = virusData.getCountryDataMap();
             List<CoronaCountryModel> countryStats = new ArrayList<>();
             for (Map.Entry<String, CoronaCountryModel> map : dataMap.entrySet()) {
-                map.getValue().setCountry(tls.usToCn(map.getValue().getCountry()));
-                countryStats.add(map.getValue());
+                CoronaCountryModel coronaCountryModel = new CoronaCountryModel(map.getValue());
+                coronaCountryModel.setCountry(tls.usToCn(coronaCountryModel.getCountry()));
+                countryStats.add(coronaCountryModel);
             }
             int totalReportedCases = dataMap.entrySet().stream().mapToInt(stat -> stat.getValue().getLatestCases()).sum();
             int totalNewCases = dataMap.entrySet().stream().mapToInt(stat -> stat.getValue().getDiffFromPrevDay()).sum();
