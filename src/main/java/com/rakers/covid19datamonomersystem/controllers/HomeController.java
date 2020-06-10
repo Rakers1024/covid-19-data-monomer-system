@@ -2,6 +2,7 @@ package com.rakers.covid19datamonomersystem.controllers;
 
 import com.rakers.covid19datamonomersystem.components.CoronaVirusData;
 import com.rakers.covid19datamonomersystem.models.CoronaCountryModel;
+import com.rakers.covid19datamonomersystem.services.DataService;
 import com.rakers.covid19datamonomersystem.services.TranslateService;
 import com.rakers.covid19datamonomersystem.services.TranslateServiceImpl;
 import org.slf4j.Logger;
@@ -23,16 +24,19 @@ public class HomeController {
     CoronaVirusData virusData;
 
     @Autowired
-    TranslateService tls;
+    TranslateService translateService;
+
+    @Autowired
+    DataService dataService;
 
     @GetMapping("/")
     public String home(Model model) {
         try {
-            Map<String, CoronaCountryModel> dataMap = virusData.getCountryDataMap();
+            Map<String, CoronaCountryModel> dataMap = dataService.getData();
             List<CoronaCountryModel> countryStats = new ArrayList<>();
             for (Map.Entry<String, CoronaCountryModel> map : dataMap.entrySet()) {
                 CoronaCountryModel coronaCountryModel = new CoronaCountryModel(map.getValue());
-                coronaCountryModel.setCountry(tls.usToCn(coronaCountryModel.getCountry()));
+                coronaCountryModel.setCountry(translateService.usToCn(coronaCountryModel.getCountry()));
                 countryStats.add(coronaCountryModel);
             }
             int totalReportedCases = dataMap.entrySet().stream().mapToInt(stat -> stat.getValue().getLatestCases()).sum();
@@ -50,16 +54,30 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping("/data")
-    @ResponseBody
-    public Map<String, CoronaCountryModel> data(){
-        Map<String, CoronaCountryModel> dataMap=null;
-        try {
-            dataMap = virusData.getCountryDataMap();
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return dataMap;
-    }
+//    @GetMapping("/model")
+//    @ResponseBody
+//    public Model model(Model model) {
+//
+//        try {
+//            Map<String, CoronaCountryModel> dataMap = dataService.getData();
+//            List<CoronaCountryModel> countryStats = new ArrayList<>();
+//            for (Map.Entry<String, CoronaCountryModel> map : dataMap.entrySet()) {
+//                CoronaCountryModel coronaCountryModel = new CoronaCountryModel(map.getValue());
+//                coronaCountryModel.setCountry(translateService.usToCn(coronaCountryModel.getCountry()));
+//                countryStats.add(coronaCountryModel);
+//            }
+//            int totalReportedCases = dataMap.entrySet().stream().mapToInt(stat -> stat.getValue().getLatestCases()).sum();
+//            int totalNewCases = dataMap.entrySet().stream().mapToInt(stat -> stat.getValue().getDiffFromPrevDay()).sum();
+//            int totalDeaths = dataMap.entrySet().stream().mapToInt(stat -> stat.getValue().getDeath()).sum();
+//            int totalDeathsToday = dataMap.entrySet().stream().mapToInt(stat -> stat.getValue().getDeathDiffFromPrevDay()).sum();
+//            model.addAttribute("locationsStats", countryStats);
+//            model.addAttribute("totalReportedCases", totalReportedCases);
+//            model.addAttribute("totalNewCases", totalNewCases);
+//            model.addAttribute("totalDeaths", totalDeaths);
+//            model.addAttribute("totalDeathsToday", totalDeathsToday);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        return model;
+//    }
 }

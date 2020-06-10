@@ -19,71 +19,73 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class CoronaVirusDataServiceImpl implements CoronaVirusDataService, Constants {
     private static final Logger logger = LoggerFactory.getLogger(CoronaVirusDataServiceImpl.class);
-    private final static long TIME_OUT = 1800L;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public String fetchVirusData(String uri) {
-        logger.info("开始获取数据");
-        ValueOperations<String, String> vot = stringRedisTemplate.opsForValue();
-        if (stringRedisTemplate.hasKey(uri)) {
-            logger.info("在redis中找到key="+uri);
-            try {
-                return vot.get(uri);
-            }catch (Exception e){
-                logger.error(e.getMessage(), e);
-                throw new APIRuntimeException("从redis获取数据时发生错误!");
-            }
-        }else{
-            logger.info("在redis中未找到key");
-            String apiOutput = null;
-            try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
-                HttpGet getRequest = new HttpGet(uri);
-                HttpResponse response = null;
-                response = httpClient.execute(getRequest);
-                int statusCode = NOT_FOUND;
-                if (response != null && response.getStatusLine() != null)
-                    statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode != SUCCESS) {
-                    throw new APIRuntimeException("Failed with HTTP error code : " + statusCode);
-                }
-                HttpEntity httpEntity = response.getEntity();
-                apiOutput = EntityUtils.toString(httpEntity);
-                vot.set(uri, apiOutput, TIME_OUT, TimeUnit.SECONDS);
-            } catch (IOException | APIRuntimeException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return apiOutput;
-        }
-//        String apiOutput = null;
-//        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
-//            HttpGet getRequest = new HttpGet(uri);
-//            HttpResponse response = null;
-//            response = httpClient.execute(getRequest);
-//            int statusCode = NOT_FOUND;
-//            if (response != null && response.getStatusLine() != null)
-//                statusCode = response.getStatusLine().getStatusCode();
-//            if (statusCode != SUCCESS) {
-//                throw new APIRuntimeException("Failed with HTTP error code : " + statusCode);
+//        logger.info("开始获取数据");
+//        ValueOperations<String, String> vot = stringRedisTemplate.opsForValue();
+//        if (stringRedisTemplate.hasKey(uri)) {
+//            logger.info("在redis中找到key="+uri);
+//            try {
+//                return vot.get(uri);
+//            }catch (Exception e){
+//                logger.error(e.getMessage(), e);
+//                throw new APIRuntimeException("从redis获取数据时发生错误!");
 //            }
-//            HttpEntity httpEntity = response.getEntity();
-//            apiOutput = EntityUtils.toString(httpEntity);
-//        } catch (IOException | APIRuntimeException e) {
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//            e.printStackTrace();
+//        }else{
+//            logger.info("在redis中未找到key");
+//            String apiOutput = null;
+//            try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
+//                HttpGet getRequest = new HttpGet(uri);
+//                HttpResponse response = null;
+//                response = httpClient.execute(getRequest);
+//                int statusCode = NOT_FOUND;
+//                if (response != null && response.getStatusLine() != null)
+//                    statusCode = response.getStatusLine().getStatusCode();
+//                if (statusCode != SUCCESS) {
+//                    throw new APIRuntimeException("Failed with HTTP error code : " + statusCode);
+//                }
+//                HttpEntity httpEntity = response.getEntity();
+//                apiOutput = EntityUtils.toString(httpEntity);
+//                vot.set(uri, apiOutput, TIME_OUT, TimeUnit.SECONDS);
+//            } catch (IOException | APIRuntimeException e) {
+//                e.printStackTrace();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            return apiOutput;
 //        }
-//        return apiOutput;
+        String apiOutput = null;
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
+            HttpGet getRequest = new HttpGet(uri);
+            HttpResponse response = null;
+            try {
+                response = httpClient.execute(getRequest);
+            } catch (UnknownHostException e) {
+                logger.error("网络错误，raw.githubusercontent.com解析失败，需要翻墙");
+            }
+            int statusCode = NOT_FOUND;
+            if (response != null && response.getStatusLine() != null)
+                statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != SUCCESS) {
+                throw new APIRuntimeException("Failed with HTTP error code : " + statusCode);
+            }
+            HttpEntity httpEntity = response.getEntity();
+            apiOutput = EntityUtils.toString(httpEntity);
+        } catch (IOException | APIRuntimeException e) {
+            e.printStackTrace();
+        }
+        return apiOutput;
     }
 
     @Override
